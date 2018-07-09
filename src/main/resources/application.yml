@@ -1,0 +1,10 @@
+spring:
+  cache:
+    type: redis
+    cache-names: commodity
+    redis:
+      # the expiration time of redis cache, "H" means hour, "M" means minute, "S" means second,
+      time-to-live: PT10S
+  redis:
+    host: localhost
+    port: 6379
