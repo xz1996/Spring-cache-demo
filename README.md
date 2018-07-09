@@ -237,4 +237,4 @@ It is important to note that void methods can be used with ```@CacheEvict``` - a
 
 # More info
 
-click [here](https://docs.spring.io/spring/docs/current/spring-framework-reference/integration.html#cache-store-configuration)
+click [here](https://docs.spring.io/spring/docs/current/spring-framework-reference/integration.html#cache)
