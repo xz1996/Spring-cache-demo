@@ -12,6 +12,7 @@
   - [```@CachePut``` annotation](#cacheput-annotation)
   - [```@CacheEvict``` annotation](#cacheevict-annotation)
 - [Notes](#notes)
+- [More info](#more-info)
 
 ---
 
@@ -247,3 +248,7 @@ It is important to note that void methods can be used with ```@CacheEvict``` - a
 3. The expiration time of cache
 
     Directly through your cache provider. The solution you are using might support various data policies and different topologies which other solutions do not (take for example the JDK ConcurrentHashMap) - exposing that in the cache abstraction would be useless simply because there would no backing support. Such functionality should be controlled directly through the backing cache, when configuring it or through its native API. So if you use the spring simple cache (which means use *ConcurrentHashMap*), the TTL of cache may be forever.
+
+# More info
+
+If you want to know about the spring cache, click [here](https://docs.spring.io/spring/docs/current/spring-framework-reference/integration.html#cache)
