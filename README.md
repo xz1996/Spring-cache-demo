@@ -235,6 +235,7 @@ It is important to note that void methods can be used with ```@CacheEvict``` - a
     When using proxies, you should apply the cache annotations only to methods with public visibility. If you do annotate protected, private or package-visible methods with these annotations, no error is raised, but the annotated method does not exhibit the configured caching settings. Consider the use of AspectJ (see below) if you need to annotate non-public methods as it changes the bytecode itself.
 
     In proxy mode (which is the default), only external method calls coming in through the proxy are intercepted. This means that self-invocation, in effect, a method within the target object calling another method of the target object, will not lead to an actual caching at runtime even if the invoked method is marked with @Cacheable - considering using the aspectj mode in this case. There is an example:
+
     ```Java
     public String get() {
         return getName();
@@ -248,6 +249,37 @@ It is important to note that void methods can be used with ```@CacheEvict``` - a
 3. The expiration time of cache
 
     Directly through your cache provider. The solution you are using might support various data policies and different topologies which other solutions do not (take for example the JDK ConcurrentHashMap) - exposing that in the cache abstraction would be useless simply because there would no backing support. Such functionality should be controlled directly through the backing cache, when configuring it or through its native API. So if you use the spring simple cache (which means use *ConcurrentHashMap*), the TTL of cache may be forever.
+
+4. CacheManager
+
+    There are some limitations for using annotation, for example, you can only add it on the public method. if you want to be more flexible, you can do as below:
+
+    ```Java
+    @Autowired
+    private RedisCacheManager redisCacheManager;
+    ```
+    or
+
+     ```Java
+    @Autowired
+    private ConcurrentMapCacheManager cacheManager;
+    ```
+    It's up to your cache provider, then you can set or acquire the cache by this means:
+
+    ```Java
+    // Acquire the cache whose name is "commodity".
+    Cache redisCache = redisCacheManager.getCache("commodity");
+
+    // Put the "123" string with key into the cache, it's equal to @CachePut.
+    redisCache.put("key", "123");
+
+    // Get the cache content whose key is "key", it's equal to @Cacheable
+    redisCache.get("key").get();
+
+    // Evict the cache content whose key is "key", it's equal to @CacheEvict.
+    redisCache.evict("key");
+
+    ```
 
 # More info
 
