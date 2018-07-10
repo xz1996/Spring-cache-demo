@@ -1,3 +1,20 @@
+# Content
+
+- [Introduction](#introduction)
+- [Getting started](#getting-started)
+  - [the ```build.gradle``` file](#the-buildgradle-file)
+  - [the ```application.yml``` file](#the-applicationyml-file)
+  - [Cache annotation](#cache-annotation)
+  - [```@Cacheable``` annotation](#cacheable-annotation)
+    - [Default Key Generation](#default-key-generation)
+    - [Custom Key Generation Declaration](#custom-key-generation-declaration)
+    - [Available caching SpEL evaluation context](#available-caching-spel-evaluation-context)
+  - [```@CachePut``` annotation](#cacheput-annotation)
+  - [```@CacheEvict``` annotation](#cacheevict-annotation)
+- [Notes](#notes)
+
+---
+
 # Introduction
 
 The Spring Framework provides support for transparently adding caching to an application. At its core, the abstraction applies caching to methods, thus reducing the number of executions based on the information available in the cache. The caching logic is applied transparently, without any interference to the invoker. Spring Boot auto-configures the cache infrastructure as long as caching support is enabled via the ```@EnableCaching``` annotation.
@@ -5,11 +22,11 @@ This simple example will introduce you how to start cache with redis in spring b
 
 requirements:
 
-* JDK1.8
+- JDK1.8
 
-* Spring boot version 2.0.3.RELEASE
+- Spring boot version 2.0.3.RELEASE
 
-* Redis database
+- Redis database
 
 # Getting started
 
@@ -123,11 +140,11 @@ In the snippet above, the returned reuslt of the method will be cached after the
 
 Since caches are essentially key-value stores, each invocation of a cached method needs to be translated into a suitable key for cache access. Out of the box, the caching abstraction uses a simple KeyGenerator based on the following algorithm:
 
-* If no params are given, return SimpleKey.EMPTY.
+- If no params are given, return SimpleKey.EMPTY.
 
-* If only one param is given, return that instance.
+- If only one param is given, return that instance.
 
-* If more the one param is given, return a SimpleKey containing all parameters.
+- If more the one param is given, return a SimpleKey containing all parameters.
 
 This approach works well for most use-cases; As long as parameters have natural keys and implement valid hashCode() and equals() methods. If that is not the case then the strategy needs to be changed.
 
@@ -150,7 +167,6 @@ For such cases, the ```@Cacheable``` annotation allows the user to specify how t
 Below are some examples of various SpEL declarations - if you are not familiar with it, do yourself a favor and read [Spring Expression Language](https://docs.spring.io/spring/docs/4.2.x/spring-framework-reference/html/expressions.html):
 
 ```Java
-
 @Cacheable(cacheNames="books", key="#isbn")
 public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)
 
@@ -159,7 +175,6 @@ public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)
 
 @Cacheable(cacheNames="books", key="T(someType).hash(#isbn)")
 public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)
-
 ```
 
 The snippets above show how easy it is to select a certain argument, one of its properties or even an arbitrary (static) method.
@@ -167,10 +182,8 @@ The snippets above show how easy it is to select a certain argument, one of its 
 If the algorithm responsible to generate the key is too specific or if it needs to be shared, you may define a custom keyGenerator on the operation. To do this, specify the name of the KeyGenerator bean implementation to use:
 
 ```Java
-
 @Cacheable(cacheNames="books", keyGenerator="myKeyGenerator")
 public Book findBook(ISBN isbn, boolean checkWarehouse, boolean includeUsed)
-
 ```
 
 *```The key and keyGenerator parameters are mutually exclusive and an operation specifying both will result in an exception.```*
@@ -210,7 +223,7 @@ public void loadBooks(InputStream batch)
 
 It is important to note that void methods can be used with ```@CacheEvict``` - as the methods act as triggers, the return values are ignored (as they don’t interact with the cache) - this is not the case with ```@Cacheable``` which adds/updates data into the cache and thus requires a result.
 
-### Notes
+# Notes
 
 1. The ```@EnableCaching``` has two mode: *PROXY* and *ASPECTJ*.
 
@@ -234,4 +247,3 @@ It is important to note that void methods can be used with ```@CacheEvict``` - a
 3. The expiration time of cache
 
     Directly through your cache provider. The solution you are using might support various data policies and different topologies which other solutions do not (take for example the JDK ConcurrentHashMap) - exposing that in the cache abstraction would be useless simply because there would no backing support. Such functionality should be controlled directly through the backing cache, when configuring it or through its native API. So if you use the spring simple cache (which means use *ConcurrentHashMap*), the TTL of cache may be forever.
-
